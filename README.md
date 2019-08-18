@@ -88,7 +88,7 @@
 
 - 连续型特征
 
-  - 标准化
+  - 标准化  
     $x^{\prime}=\frac{x-\bar{x}}{S}$
   
   - 归一化
@@ -198,6 +198,8 @@
     - 互信息
 
       [`mutual_info_regression`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.mutual_info_regression.html#sklearn.feature_selection.mutual_info_regression)
+
+  > 上面提及的过滤式特征选择主要是标签相关的，另外还有单纯的特征筛选（不依赖标签列），比如常用的两个是按照列缺失比例和列标准差进行筛选（往往需要删除缺失率较大的列和标准差较小列）。
 
 - 包裹式特征选择
 
