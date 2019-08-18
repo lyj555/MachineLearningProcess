@@ -157,11 +157,83 @@
 
 #### 5.1.3 特征选择
 
+这部分目前主要有三类方法，分别为**过滤式特征选择、包裹式特征选择和嵌入式特征选择**。
 
+- 过滤式特征选择
+
+  相当于单变量特征选择，每个特征列和标签列计算一个公式来衡量该特征和标签的相关性。
+
+  - 分类任务
+
+    - 信息增益
+
+      $f(A, D)=H(D)-H(D|A)$
+
+    - 基尼系数
+
+      $f(A,D)=gini(D, A)$
+
+    - 卡方检验
+
+      [`chi2`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.chi2.html#sklearn.feature_selection.chi2)
+
+    - 方差分析
+
+      [`f_classif`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.f_classif.html#sklearn.feature_selection.f_classif)（ANOVA F-value between label/feature）
+
+    - 互信息
+
+      [`mutual_info_classif`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.mutual_info_classif.html#sklearn.feature_selection.mutual_info_classif)
+
+  - 回归任务
+
+    - 相关系数
+
+      皮尔逊相关系数
+
+    - 方差分析
+
+      [`f_regression`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.f_regression.html#sklearn.feature_selection.f_regression)
+
+    - 互信息
+
+      [`mutual_info_regression`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.mutual_info_regression.html#sklearn.feature_selection.mutual_info_regression)
+
+- 包裹式特征选择
+
+  这种方式直接把最终使用的学习器的性能作为特征子集的评价准则，整体效果要优于过滤式特征选择，但是计算开销通常比过滤式特征选择要大得多。
+
+  - LVW(Las Vegas Wrapper)
+
+    这是一个典型的包裹式特征选择方法，每次通过随机选择的方式生成特征子集，然后通过学习器进行评估，然后迭代此过程直至达到设定的条件，最终返回相对最优的特征子集。
+
+  > LVW的采用随机的策略生成特征子集，显然我们可以根据自己业务理解或者其它方式生成我们自己定制的特征子集
+
+- 嵌入式特征选择
+
+  以上两种特征选择方式，可以这样理解，过滤式特征选择相当于是在模型训练之前进行特征选择，包裹式特征选择则是在模型训练之后进行特征选择。而嵌入式特征选择恰是在模型训练的同时进行了特征选择。
+
+  通常这种方式是通过在损失函数中加入正则项来实现，通常是加入L1正则项，类似决策树相关的模型，其实也可以看做是嵌入式特征选择的一种，其在构建树的同时就进行了特征选择。
 
 #### 5.1.4 超参数选择
 
+目前超参数的选择应该是有四种方式（个人总结），分别为网格搜索、随机搜素、BayesianOptimization和Hyper-parameter Optimizationt方式。
 
+- 网格搜索
+
+  sklearn的实现方式[`GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV)，但是输入的数据必须要做K折交叉验证，往往比较耗时。
+
+- 随机搜索
+
+  slearn的实现方式[`RandomizedSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html#sklearn.model_selection.RandomizedSearchCV)，类似sklearn的网格搜索，需要做交叉验证，但是不需要遍历所有的网格参数，这样很大程度可以加快超参数的选择时间。
+
+- BayesianOptimization
+
+  [BayesianOptimization](https://github.com/fmfn/BayesianOptimization)构建需要优化的函数的先验分布（高斯过程），随着迭代论述的增加，先验分布发生改变，算法逐步缩小需要优化的参数空间，从而找到最优参数集。
+
+- Hyper-parameter Optimization
+
+  [Hyper-parameter Optimization](https://github.com/hyperopt/hyperopt) is a Python library for optimizing over awkward search spaces with real-valued, discrete, and conditional dimensions.
 
 #### 5.1.5 模型选择
 
