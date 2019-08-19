@@ -1,6 +1,6 @@
 [TOC]
 
-# MachineLearningProcess
+# Model Process
 
 
 
@@ -117,7 +117,7 @@
 
     - power transforms 
 
-      Power transforms are a family of parametric, monotonic transformations that aim to map data from any distribution to as close to a Gaussian distribution as possible in order to stabilize variance and minimize skewness
+      Power transforms are a family of parametric, monotonic transformations that aim to map data from any distribution to as close to a **Gaussian distribution** as possible in order to stabilize variance and minimize skewness
 
     > 在非线性变换这部分中，个人经常看到的是做log变换，即将长尾分布转换为正态分布。
   
