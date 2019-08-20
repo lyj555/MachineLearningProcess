@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from utils.get_feature_by_contion import filter_feature_series
+from utils.feature_utils import filter_feature_series
 
 
-def null_filter(X, null_identity=None, max_features=None, return_indices=False, null_ratio_threshold=None, greater_than_and_equal=False):
+def null_filter(X, null_identity=None, max_features=None, return_indices=False, null_ratio_threshold=None,
+                greater_than_and_equal=False):
     """
     filter features with null values when null ratio greater than null_ratio_threshold or top max_feature not null feature
     :param X: pandas.DataFrame, feature data
@@ -74,7 +75,6 @@ def std_filter(X, max_features=None, return_indices=False, std_threshold=None, g
 #     X = X.astype(data_types).copy()
 
 
-
 if __name__ == "__main__":
     # construct test data
     import pandas as pd
@@ -91,4 +91,4 @@ if __name__ == "__main__":
     print(df.head())
     # ret = chi2(df[["f1", "f2"]], df["label_c"])
     # print(chi2(df[["f1", "f2"]], df["label_c"]))
-    
+
