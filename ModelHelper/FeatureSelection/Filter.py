@@ -84,7 +84,7 @@ if __name__ == "__main__":
     data_size = 100
     df = pd.DataFrame({"f1": np.random.randint(1, 10, size=data_size),
                        "f2": np.random.rand(data_size),
-                       "f3": np.random.choice(["A", "B", "C", "D"], size=data_size, replace=True),
+                       "f3": np.random.choice(["A", np.NaN, "C", "D"], size=data_size, replace=True),
                        "f4": [10]*data_size, 
                        "label_c": np.random.choice([0, 1], size=data_size, replace=True),
                        "label_f": np.random.rand(data_size)*10})

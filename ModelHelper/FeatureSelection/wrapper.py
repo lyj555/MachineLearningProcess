@@ -41,14 +41,14 @@ def random_search(train_x, train_y, k_fold=None,
     else:
         raise ValueError("min_feature set wrong!")
     
-    best_effect, best_subset, best_feat_dim = float("-inf"), list(X.columns), feat_dim
+    best_effect, best_subset, best_feat_dim = float("-inf"), list(train_x.columns), feat_dim
     t = 0
     
     if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
         train_x, train_y, valid_x, valid_y = train_test_split(train_x, train_y, valid_ratio)
     
     while t < max_iter:
-        feature_subset = generate_random_list(X.columns, sample, min_feature)
+        feature_subset = generate_random_list(train_x.columns, sample, min_feature)
         if feature_subset is None:
             return best_subset
         feature_dim = len(feature_subset)
@@ -92,7 +92,7 @@ def lvw(train_x, train_y, k_fold=None,
     else:
         raise ValueError("min_feature set wrong!")
 
-    best_effect, best_subset, best_feat_dim = float("-inf"), list(X.columns), feat_dim
+    best_effect, best_subset, best_feat_dim = float("-inf"), list(train_x.columns), feat_dim
     t = 0
 
     if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
@@ -141,7 +141,7 @@ def random_search_by_model(train_x, train_y, k_fold=None,
     else:
         raise ValueError("min_feature set wrong!")
 
-    best_effect, best_subset, best_feat_dim = float("-inf"), list(X.columns), feat_dim
+    best_effect, best_subset, best_feat_dim = float("-inf"), list(train_x.columns), feat_dim
     t = 0
 
     if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
@@ -153,7 +153,7 @@ def random_search_by_model(train_x, train_y, k_fold=None,
     feat_imp_sigmoid = 1/sum(feat_imp_sigmoid)
 
     while t < max_iter:
-        feature_subset = generate_random_list(X.columns, sample, min_feature, feat_imp_sigmoid)
+        feature_subset = generate_random_list(train_x.columns, sample, min_feature, feat_imp_sigmoid)
 
         if feature_subset is None:
             return best_subset
