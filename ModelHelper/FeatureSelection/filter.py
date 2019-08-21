@@ -13,7 +13,7 @@ def null_filter(X, null_identity=None, max_features=None, return_indices=False, 
     :param max_features: top [int or percent] features, only works if return_indices set False
     :param return_indices: False means return columns
     :param null_ratio_threshold: null threshold for delete
-    :param greater_than_and_equal: default False, if contain operator euqual only works with null_ratio_threshold used
+    :param greater_than_and_equal: default False, if contain operator equal only works with null_ratio_threshold used
     :return: list[str] or pandas.Series
     """
     if null_identity is None:
@@ -30,7 +30,7 @@ def null_filter(X, null_identity=None, max_features=None, return_indices=False, 
             return [i for i in X.columns if i not in need_delete]
         elif max_features is not None and max_features > 0:
             return filter_feature_series(1-null_ratio, max_features=max_features,
-                                         threshold=None, greater_than_and_equal=greater_than_and_equal)
+                                         threshold=None, greater_than_and_equal=None)
         else:
             raise ValueError("null_ratio_threshold set wrong.")
 
@@ -56,7 +56,7 @@ def std_filter(X, max_features=None, return_indices=False, std_threshold=None, g
             return [i for i in X.columns if i in need_keep or X[i].dtype == object]
         elif max_features is not None and max_features > 0:
             need_keep = filter_feature_series(std_series, max_features=max_features, 
-                                              threshold=None, greater_than_and_equal=greater_than_and_equal)
+                                              threshold=None, greater_than_and_equal=None)
             return [i for i in X.columns if i in need_keep or X[i].dtype == object]
         else:
             raise ValueError("null_ratio_threshold set wrong.")
