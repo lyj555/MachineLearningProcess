@@ -44,8 +44,8 @@ def random_search(train_x, train_y, model, initialize_by_model=True, k_fold=None
     :param min_feature:
     :return:
     """
-    if isinstance(train_x, pd.DataFrame):
-        
+    if not isinstance(train_x, pd.DataFrame):
+        raise ValueError("param train_x must be pandas DataFrame")
     feat_dim = train_x.shape[1]
 
     if random_state is not None:
@@ -111,6 +111,9 @@ def lvw(train_x, train_y, model, initialize_by_model=True, k_fold=None,
         create_valid=False, valid_ratio=None, valid_x=None, valid_y=None, metric_func=None,
         sample=None, max_iter=10, random_state=None,
         err_threshold=None, min_feature=None):
+    if not isinstance(train_x, pd.DataFrame):
+        raise ValueError("param train_x must be pandas DataFrame")
+
     feat_dim = train_x.shape[1]
 
     if random_state is not None:
@@ -125,6 +128,10 @@ def lvw(train_x, train_y, model, initialize_by_model=True, k_fold=None,
     else:
         raise ValueError("min_feature set wrong!")
 
+    if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
+        train_x, valid_x, train_y, valid_y = train_test_split(train_x, train_y, test_size=valid_ratio,
+                                                              random_state=random_state)
+
     if initialize_by_model:
         if k_fold is not None:
             best_effect = cross_validation_score(train_x, train_y, k_fold, model)
@@ -132,15 +139,14 @@ def lvw(train_x, train_y, model, initialize_by_model=True, k_fold=None,
             best_effect = valid_set_score(train_x, train_y, valid_x, valid_y,
                                           model=model, metric_func=metric_func)
         best_subset, best_feat_dim = list(train_x.columns), feat_dim
+        print(f"initialize effect {best_effect}, feature dim {best_feat_dim}")
     else:
         best_effect, best_subset, best_feat_dim = float("-inf"), list(train_x.columns), feat_dim
-    t = 0
-
-    if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
-        train_x, train_y, valid_x, valid_y = train_test_split(train_x, train_y, valid_ratio)
-
+        print(f"initialize effect -inf, feature dim {best_feat_dim}")
+    t = 1
     alternative_subset = best_subset
-    while t < max_iter:
+    while t <= max_iter:
+        print(f"round {t} start...")
         feature_subset = generate_random_list(alternative_subset, sample, min_feature)
 
         if feature_subset is None:
@@ -152,7 +158,7 @@ def lvw(train_x, train_y, model, initialize_by_model=True, k_fold=None,
         else:
             effect_subset = valid_set_score(train_x[feature_subset], train_y, valid_x[feature_subset], valid_y,
                                             model=model, metric_func=metric_func)
-
+        print(f"effect subset is {effect_subset}, feature dim is {feature_dim}")
         condition_num = _meet_condition(old_effect=(best_effect, best_feat_dim), now_effect=(effect_subset, feature_dim)
                                         , min_err=err_threshold)
         if condition_num == 0 or (condition_num == 1 and feature_dim < best_feat_dim):
@@ -168,6 +174,9 @@ def random_search_by_model_feat(train_x, train_y, model, initialize_by_model=Tru
                                 create_valid=False, valid_ratio=None, valid_x=None, valid_y=None, metric_func=None,
                                 sample=None, max_iter=10, random_state=None,
                                 err_threshold=None, min_feature=None):
+    if not isinstance(train_x, pd.DataFrame):
+        raise ValueError("param train_x must be pandas DataFrame")
+
     feat_dim = train_x.shape[1]
 
     if random_state is not None:
@@ -182,6 +191,10 @@ def random_search_by_model_feat(train_x, train_y, model, initialize_by_model=Tru
     else:
         raise ValueError("min_feature set wrong!")
 
+    if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
+        train_x, valid_x, train_y, valid_y = train_test_split(train_x, train_y, test_size=valid_ratio,
+                                                              random_state=random_state)
+
     if initialize_by_model:
         if k_fold is not None:
             best_effect = cross_validation_score(train_x, train_y, k_fold, model)
@@ -189,19 +202,19 @@ def random_search_by_model_feat(train_x, train_y, model, initialize_by_model=Tru
             best_effect = valid_set_score(train_x, train_y, valid_x, valid_y,
                                           model=model, metric_func=metric_func)
         best_subset, best_feat_dim = list(train_x.columns), feat_dim
+        print(f"initialize effect {best_effect}, feature dim {best_feat_dim}")
     else:
         best_effect, best_subset, best_feat_dim = float("-inf"), list(train_x.columns), feat_dim
-    t = 0
+        print(f"initialize effect -inf, feature dim {best_feat_dim}")
 
-    if create_valid and valid_ratio is not None and (0 < valid_ratio < 1):
-        train_x, train_y, valid_x, valid_y = train_test_split(train_x, train_y, valid_ratio)
+    t = 1
 
     feat_imp = model.fit(train_x, train_y).feature_importances_
 
     feat_imp_sigmoid = 1/(1 + np.exp(-feat_imp))
     feat_imp_sigmoid = 1/sum(feat_imp_sigmoid)
 
-    while t < max_iter:
+    while t <= max_iter:
         feature_subset = generate_random_list(train_x.columns, sample, min_feature, feat_imp_sigmoid)
 
         if feature_subset is None:
@@ -294,10 +307,16 @@ if __name__ == "__main__":
     clf = DecisionTreeClassifier()
 
     # a = random_search(df, label, clf, initialize_by_model=True, k_fold=3, sample=0.8, random_state=666, err_threshold=0.005)
-    # print(len(a))
+    # print("last num", len(a))
 
-    a = random_search(df, label, clf, initialize_by_model=True, k_fold=None, sample=81, random_state=666,
-                      create_valid=True, valid_ratio=0.2,
-                      metric_func=roc_auc_score)
-    print("last num", len(a))
+    # a = random_search(df, label, clf, initialize_by_model=True, k_fold=None, sample=81, random_state=666,
+    #                   create_valid=True, valid_ratio=0.2,
+    #                   metric_func=roc_auc_score)
+    # print("last num", len(a))
 
+    # a = lvw(df, label, clf, initialize_by_model=True, k_fold=3, sample=0.8, random_state=667)
+    # print("last num", len(a))
+    
+    # a = lvw(df, label, clf, initialize_by_model=True, k_fold=None, sample=0.8, random_state=666,
+    #         create_valid=True, valid_ratio=0.2, metric_func=roc_auc_score)
+    # print("last num", len(a))
