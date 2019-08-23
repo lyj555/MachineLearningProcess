@@ -31,14 +31,16 @@ def _initialize(initialize_by_model, train_x, train_y, k_fold, model, valid_x, v
     else:
         best_effect = float("-inf")
         print(f"initialize effect -inf, cost time {best_model_time}, with param {clf.get_params()}")
-    return best_effect, clf.get_params(), best_model_time
+    return best_effect, model.get_params(), best_model_time
 
 
-def random_search(train_x, train_y, model, param_grid, initialize_by_model=True, k_fold=None, create_valid=False,
-                  valid_ratio=None, valid_x=None, valid_y=None, metric_func=None, max_iter=10,
-                  random_state=None, err_threshold=None, verbose=True):
+def param_search(train_x, train_y, model, param_grid, method="grid", initialize_by_model=True, k_fold=None, create_valid=False,
+                 valid_ratio=None, valid_x=None, valid_y=None, metric_func=None, max_iter=10,
+                 random_state=None, err_threshold=None, verbose=True):
     if not isinstance(train_x, pd.DataFrame):
         raise ValueError("param train_x must be pandas DataFrame")
+    if method not in ("grid", "random"):
+        raise ValueError("param method must be in ('grid', 'random')!")
 
     if random_state is not None:
         np.random.seed(random_state)
@@ -51,7 +53,11 @@ def random_search(train_x, train_y, model, param_grid, initialize_by_model=True,
                                                            model, valid_x, valid_y, metric_func)
 
     param_iter = ParameterGrid(param_grid)
-    param_subset = np.random.choice(param_iter, size=(max_iter, ), replace=False)
+    if method == "random":
+        param_subset = np.random.choice(param_iter, size=(max_iter, ), replace=False)
+    elif method == "grid":
+        param_subset = param_iter
+
     t = 1
     for param in param_subset:
         if verbose:
@@ -75,29 +81,32 @@ def random_search(train_x, train_y, model, param_grid, initialize_by_model=True,
     return best_param, best_effect
 
 
-if __name__ == "__main__":
-    import pandas as pd
-    import numpy as np
-
-    np.random.seed(666)
-    data_size = 1000
-    feature_size = 100
-
-    df = pd.DataFrame()
-    for i in range(feature_size):
-        df[f"f{i}"] = np.random.randint(i, i + 500, size=data_size)
-
-    label = np.random.choice([0, 1], size=data_size, replace=True)
-
-    print(df.head())
-
-    from sklearn.tree import DecisionTreeClassifier
-    from sklearn.metrics import roc_auc_score
-    from sklearn.model_selection import train_test_split
-
-    clf = DecisionTreeClassifier()
-    param_grid = {"max_depth": [1, 2, 3, 4, 5], "min_samples_leaf": [1, 10, 100, 200], "criterion": ["gini", "entropy"]}
-
-    # random_search(df, label, clf, param_grid, k_fold=3, max_iter=20, random_state=666)
-    random_search(df, label, clf, param_grid, k_fold=3, max_iter=20, random_state=666, create_valid=True, valid_ratio=0.2)
-
+# if __name__ == "__main__":
+#     import pandas as pd
+#     import numpy as np
+#
+#     np.random.seed(666)
+#     data_size = 1000
+#     feature_size = 100
+#
+#     df = pd.DataFrame()
+#     for i in range(feature_size):
+#         df[f"f{i}"] = np.random.randint(i, i + 500, size=data_size)
+#
+#     label = np.random.choice([0, 1], size=data_size, replace=True)
+#
+#     print(df.head())
+#
+#     from sklearn.tree import DecisionTreeClassifier
+#     from sklearn.metrics import roc_auc_score
+#     from sklearn.model_selection import train_test_split
+#
+#     clf = DecisionTreeClassifier()
+#     param_grid = {"max_depth": [1, 2, 3, 4, 5], "min_samples_leaf": [1, 10, 100, 200], "criterion": ["gini", "entropy"]}
+#
+#     # random_search(df, label, clf, param_grid, k_fold=3, max_iter=20, random_state=666)
+#     # param_search(df, label, clf, param_grid, method="random",
+#     #              k_fold=3, max_iter=20, random_state=666, create_valid=True, valid_ratio=0.2)
+#
+#     param_search(df, label, clf, param_grid, method="grid",
+#                  k_fold=None, max_iter=20, random_state=666, create_valid=True, valid_ratio=0.2)
