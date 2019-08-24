@@ -78,7 +78,7 @@ def param_search(train_x, train_y, model, param_grid, method="grid", initialize_
         t += 1
     print("all round end.")
     print(f"best effect is {best_effect}, cost time {subset_time}, with best param {best_param}")
-    return best_param, best_effect
+    return best_effect, best_param
 
 
 # if __name__ == "__main__":

@@ -199,9 +199,9 @@
 
       [`mutual_info_regression`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.mutual_info_regression.html#sklearn.feature_selection.mutual_info_regression)
 
-  > 上面提及的过滤式特征选择主要是标签相关的，另外还有单纯的特征筛选（不依赖标签列），比如常用的两个是按照列缺失比例和列标准差进行筛选（往往需要删除缺失率较大的列和标准差较小列）。
+  > 上面提及的过滤式特征选择主要是标签相关的，另外还有单纯的特征筛选（不依赖标签列），比如常用的两个是按照**列缺失比例**和**列标准差**进行筛选（往往需要删除缺失率较大的列和标准差较小列）。
 
-- 包裹式特征选择
+- 包裹式特征选择（已代码实现）
 
   这种方式直接把最终使用的学习器的性能作为特征子集的评价准则，整体效果要优于过滤式特征选择，但是计算开销通常比过滤式特征选择要大得多。
 
@@ -221,17 +221,17 @@
 
 目前超参数的选择应该是有四种方式（个人总结），分别为网格搜索、随机搜素、BayesianOptimization和Hyper-parameter Optimizationt方式。
 
-- 网格搜索
+- 网格搜索（已代码实现）
 
   sklearn的实现方式[`GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV)，但是输入的数据必须要做K折交叉验证，往往比较耗时。
 
-- 随机搜索
+- 随机搜索（已代码实现）
 
   slearn的实现方式[`RandomizedSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html#sklearn.model_selection.RandomizedSearchCV)，类似sklearn的网格搜索，需要做交叉验证，但是不需要遍历所有的网格参数，这样很大程度可以加快超参数的选择时间。
 
-- BayesianOptimization
+- BayesianOptimization（已代码实现）
 
-  [BayesianOptimization](https://github.com/fmfn/BayesianOptimization)构建需要优化的函数的先验分布（高斯过程），随着迭代论述的增加，先验分布发生改变，算法逐步缩小需要优化的参数空间，从而找到最优参数集。
+  [BayesianOptimization](https://github.com/fmfn/BayesianOptimization)构建需要优化的函数的先验分布（高斯过程），随着迭代论述的增加，先验分布发生改变，算法逐步缩小需要优化的参数空间，从而找到最优参数集。可参考本项目当前目录下`ParamBayesOptimization.md`
 
 - Hyper-parameter Optimization
 

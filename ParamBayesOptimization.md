@@ -136,9 +136,34 @@ $$
 
 ### 3.2 Acquisition Function
 
-Acquisition Function是关于$x$(超参数)的函数，映射到实数空间，表示该点目标函数值比最优值大多少的概率，其主要有以下几种形式，
+Acquisition Function(Utility Function)是关于$x$(超参数)的函数，映射到实数空间，表示该点的功效，或者说我们想选取一个候选点，使得Acquisition Function最大。其主要有以下几种形式，
 
 - POI(probability of improvement)
+  $$
+  POI(X)=P(f(X) \geq f(X^+)+\xi)=\Phi(\frac{\mu(x)-f(X^+)-\xi}{\sigma(x)})
+  $$
+  其中，$f(X)$为$X$的目标函数值，$f(X^+)$为目前为止最优的目标函数值，$\mu(x)$和$\sigma(x)$代表高斯过程学得的均值和方差（$f(X)$的后验分布），$\xi$可以看做为trade-off系数，如果没有该系数，则POI函数倾向选择$X^+$周围的点，即倾向exploit而不是explore，因此需要该参数来权衡。
+
+- EI(Expected Improvement)
+
+  POI是一个概率函数，因此只考虑了$f(X)$比$f(X^+)$大的概率，而EI则考虑了$f(X)$比$f(X^+)$大多少，
+
+  首先获取$X$,
+  $$
+  X = \arg \max_xE(max(0, f_{t+1}(x)-f(X^+))|D_t)
+  $$
+  其中$D_t$表示为前$t$个样本，在正态分布的假设下，有
+  $$
+  EI(X)=\begin{cases} \mu(x)-f(X^+)\Phi(\frac{\mu(x)-f(X^+)}{\sigma(x)})+\sigma(x)\Phi(\frac{\mu(x)-f(X^+)}{\sigma(x)}),\quad if\ \sigma(x)>0 \\ 0,\quad if\ \sigma(x)=0 \end{cases}
+  $$
+
+- Confidence bound criteria
+
+  $LCB(x)=\mu(x)-k\sigma(x)$
+
+  $UCB(x)=\mu(x)+k\sigma(x)$
+  
+  
 
 ## References
 
