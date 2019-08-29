@@ -12,7 +12,7 @@ def _update_effect(old_effect, now_effect, min_err):
             (min_err is None and now_effect > old_effect):
         return 0
     elif (min_err is not None and abs(now_effect - old_effect) <= min_err) or\
-            min_err is None and now_effect == now_effect:
+            min_err is None and now_effect == old_effect:
         return 1
     else:
         return 2
@@ -77,7 +77,7 @@ def param_search(train_x, train_y, model, param_grid, method="grid", initialize_
             best_effect, best_param, best_model_time = effect_subset, param, subset_time
         t += 1
     print("all round end.")
-    print(f"best effect is {best_effect}, cost time {subset_time}, with best param {best_param}")
+    print(f"best effect is {best_effect}, cost time {best_model_time}, with best param {best_param}")
     return best_effect, best_param
 
 
