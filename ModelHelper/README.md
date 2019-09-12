@@ -50,7 +50,7 @@ The purpose of the project is to make modelers more efficient.
 
 - pip安装
 
-    `pip install git+http://igit.58corp.com/AIgroups/ModelHelper.git`
+    `pip install git+https://github.com/lyj555/MachineLearningProcess.git`
 
 
 ## 2. 特征选择

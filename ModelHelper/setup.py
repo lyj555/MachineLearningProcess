@@ -5,10 +5,10 @@ from setuptools import setup, find_packages
 setup(
     name='model-helper',
     version='0.0.2',
-    url='http://igit.58corp.com/AIgroups/ModelHelper',
+    url='https://github.com/lyj555/MachineLearningProcess',
     packages=find_packages(),
-    author='liuyongjie05',
-    author_email="liuyongjie05@58.com",
+    author='liuyongjie',
+    author_email="626671935@qq.com",
     description='Model Helper',
     long_description='A Python implementation of model helper, with feature selection, hyper-parameter tune and feature engineering',
     # download_url='https://github.com/fmfn/BayesianOptimization/tarball/0.6',
