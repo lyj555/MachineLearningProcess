@@ -44,13 +44,10 @@ The purpose of the project is to make modelers more efficient.
 
 - 本地安装
 
-    - `git clone http://igit.58corp.com/AIgroups/ModelHelper.git` 
+    - `git clone https://github.com/lyj555/MachineLearningProcess.git` 
 
     - `python setup.py install`
 
-- pip安装
-
-    `pip install git+https://github.com/lyj555/MachineLearningProcess.git`
 
 
 ## 2. 特征选择
