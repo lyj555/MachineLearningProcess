@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 from bayes_opt import BayesianOptimization
 
-from utils.model_utils import cross_validation_score, valid_set_score
+from ..utils.model_utils import cross_validation_score, valid_set_score
 
 
 def bayes_search(train_x, train_y, model, param_space, n_iter, k_fold=None, create_valid=False, valid_ratio=None,
@@ -49,29 +49,29 @@ def bayes_search(train_x, train_y, model, param_space, n_iter, k_fold=None, crea
     return best_result, best_params
 
 
-# if __name__ == "__main__":
-#     from sklearn.datasets import make_classification
-#     from sklearn.ensemble import RandomForestClassifier
-#
-#
-#     def _create_data():
-#         """Synthetic binary classification dataset."""
-#         data, targets = make_classification(
-#             n_samples=1000,
-#             n_features=45,
-#             n_informative=12,
-#             n_redundant=7,
-#             random_state=134985745,
-#         )
-#         return data, targets
-#
-#     data, targets = _create_data()
-#     clf = RandomForestClassifier()
-#
-#     param_space = {"max_features": {"interval": (0.1, 0.9), "type": float},
-#                    "n_estimators": {"interval": (10, 250), "type": int},
-#                    "min_samples_split": {"interval": (2, 25), "type": int}
-#                    }
-#     best_result, best_params = bayes_search(data, targets, model=clf, param_space=param_space, n_iter=10,
-#                                             k_fold=3, random_state=666)
-#     print(f"best_result is {best_result}, best_param is {best_params}")
+if __name__ == "__main__":
+    from sklearn.datasets import make_classification
+    from sklearn.ensemble import RandomForestClassifier
+
+
+    def _create_data():
+        """Synthetic binary classification dataset."""
+        data, targets = make_classification(
+            n_samples=1000,
+            n_features=45,
+            n_informative=12,
+            n_redundant=7,
+            random_state=134985745,
+        )
+        return data, targets
+
+    data, targets = _create_data()
+    clf = RandomForestClassifier()
+
+    param_space = {"max_features": {"interval": (0.1, 0.9), "type": float},
+                   "n_estimators": {"interval": (10, 250), "type": int},
+                   "min_samples_split": {"interval": (2, 25), "type": int}
+                   }
+    best_result, best_params = bayes_search(data, targets, model=clf, param_space=param_space, n_iter=10,
+                                            k_fold=3, random_state=666)
+    print(f"best_result is {best_result}, best_param is {best_params}")

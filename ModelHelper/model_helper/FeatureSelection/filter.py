@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from utils.feature_utils import filter_feature_series
+from ..utils.feature_utils import filter_feature_series
 
 
 def null_filter(X, null_identity=None, max_features=None, return_indices=False, null_ratio_threshold=None,

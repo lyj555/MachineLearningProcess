@@ -52,10 +52,9 @@
 
 import numpy as np
 from sklearn.model_selection import train_test_split
-
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
-from utils.model_utils import cross_validation_score, valid_set_score
+from ..utils.model_utils import cross_validation_score, valid_set_score
 
 
 def hyperopt_search(train_x, train_y, model, param_space, n_iter, k_fold=None, create_valid=False, valid_ratio=None,
