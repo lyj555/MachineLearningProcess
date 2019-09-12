@@ -12,8 +12,8 @@ The purpose of the project is to make modelers more efficient.
     
     - 2.2 lvw（Las Vegas Wrapper）
     
-    - 2.3_random search by feature importance(通过特征重要性做特征筛选)
-    - 2.4_top feature importance
+    - 2.3 random search by feature importance(通过特征重要性做特征筛选)
+    - 2.4 top feature importance
 - 3._超参数选择
     - 3.1 随机选择
     
