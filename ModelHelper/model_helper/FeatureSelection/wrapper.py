@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from utils.feature_utils import generate_random_list, generate_feature_list
-from utils.model_utils import cross_validation_score, valid_set_score
+from ..utils.feature_utils import generate_random_list, generate_feature_list
+from ..utils.model_utils import cross_validation_score, valid_set_score
 
 
 def _update_effect(old_effect, now_effect, min_err):
@@ -300,7 +300,7 @@ def top_feat_by_model(train_x, train_y, model, top_ratio_list, initialize_by_mod
 
     # top_feat_by_model(df, label, top_ratio_list=[0.95, 0.9, 0.85, 0.8, 0.75, 0.7], initialize_by_model=True,
     #                   model=clf, k_fold=3, random_state=666)
-
+    #
     # top_feat_by_model(df, label, top_ratio_list=[0.95, 0.9, 0.85, 0.8, 0.75, 0.7], initialize_by_model=True,
     #                   model=clf, k_fold=None, create_valid=True, valid_ratio=0.2, metric_func=roc_auc_score,
     #                   random_state=666)
