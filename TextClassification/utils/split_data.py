@@ -13,11 +13,16 @@ def split_data(data_list, split_ratio, random_state=None):
 
     ret = []
     start_index, end_index = 0, None
+    accum_ratio = 0
     for i in split_ratio:
+        accum_ratio += i
         if end_index is None:
-            index_pair[1] = int(len(data_list)*i)
-
-        ret.append(data_list[])
+            end_index = int(len(data_list)*accum_ratio)
+        else:
+            start_index = end_index
+            end_index = int(len(data_list)*accum_ratio)
+        ret.append(data_list[start_index: end_index])
+    return ret
 
 
 
