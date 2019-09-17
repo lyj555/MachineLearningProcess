@@ -2,3 +2,4 @@
 *.pyc
 __pycache__
 ModelHelper/test_distributed/
+TextClassification/data/THUCNews/model

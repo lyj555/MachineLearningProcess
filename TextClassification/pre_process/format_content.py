@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import tqdm
+from tqdm import tqdm
 import pickle
 
 UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
@@ -90,5 +90,5 @@ def format_content(file_path, if_with_label, train_granularity, build_vocab, voc
                     bad_line += 1
                     continue
     print(f"bad line number is {bad_line}")
-    return contents
+    return contents, len(vocab_dic)
 

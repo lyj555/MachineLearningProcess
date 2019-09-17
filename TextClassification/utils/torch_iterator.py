@@ -39,7 +39,7 @@ class DataIterator(object):
             self.index = 0
             raise StopIteration
         else:
-            batches = self.batches[self.index * self.batch_size: (self.index + 1) * self.batch_size]
+            batches = self.batch_data[self.index * self.batch_size: (self.index + 1) * self.batch_size]
             self.index += 1
             batches = self._to_tensor(batches)
             return batches
