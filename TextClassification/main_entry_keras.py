@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import os
+import numpy as np
 from datetime import datetime
 import pandas as pd
-import torch
+from keras import layers
+from keras.models import Sequential
+from keras import optimizers
 
 from pre_process.format_content import format_content
-from models.text_rnn import TextRNN
-from train.torch_train import train, predict
+# from models.text_rnn import TextRNN
 from utils.split_data import split_data
-from utils.torch_iterator import DataIterator
 from config import PARAM, BASE_MODEL_DIR, SAVE_RESULT, LOG_PATH
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # TODO: 1. use pre-trained word embedding 2. model initialize method
 # TODO 3. model save 4. add other model 5. other nlp task 6. batch from file
 
@@ -58,27 +58,25 @@ if __name__ == "__main__":
 
     test_pre_result, _ = format_content(test_path, build_vocab=False, **PARAM["format_content"])
 
-    # [4] create data iterator by cutting data
-    batch_size = PARAM["DataIterator"]["batch_size"]
-    train_iter = DataIterator(batch_data=train_pre_result, batch_size=batch_size, device=device)
-    valid_iter = DataIterator(batch_data=valid_pre_result, batch_size=batch_size, device=device)
-    test_iter = DataIterator(batch_data=test_pre_result, batch_size=batch_size, device=device)
+    train_x = np.array([np.array(i[0]) for i in train_pre_result], dtype=int)
+    train_y = np.array([np.array(i[2]) for i in train_pre_result], dtype=int)
 
-    # [5] initialize your model
-    clf = TextRNN(vocab_size=vocab_size, **PARAM["model"])
-    print(clf)
+    valid_x = np.array([np.array(i[0]) for i in valid_pre_result], dtype=int)
+    valid_y = np.array([np.array(i[2]) for i in valid_pre_result], dtype=int)
 
-    # [6] start training
-    start_time = datetime.now()
-    train_ret, valid_ret = train(train_iter=train_iter, dev_iter=valid_iter, model=clf, **PARAM["train"])
-    end_time = datetime.now()
-    cost_sec = (end_time-start_time).seconds
-    print(f"all spend {cost_sec} seconds.")
+    test_x = np.array([np.array(i[0]) for i in test_pre_result], dtype=int)
+    test_y = np.array([np.array(i[2]) for i in test_pre_result], dtype=int)
 
-    # [7] check test set metric
-    preds, labels = predict(model=clf, test_iter=test_iter, model_save_path=PARAM["train"]["model_save_path"])
-    test_metric = PARAM["train"]["metric_func"](y_pred=preds, y_true=labels)
-    print("test metric", test_metric)
+    model = Sequential()
+    model.add(layers.Embedding(input_dim=vocab_size, output_dim=300, input_length=32))
+    model.add(layers.LSTM(32))
+    model.add(layers.Dense(10, activation="softmax"))
+
+    model.summary()
+
+    optimizer = optimizers.Adam(lr=1e-3)
+    model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"])
+    history = model.fit(x=train_x, y=train_y, batch_size=128, epochs=1, verbose=1, validation_data=(valid_x, valid_y))
 
     if SAVE_RESULT:
         df_ret = pd.DataFrame({"model_name": [PARAM["model"]["model_name"]],

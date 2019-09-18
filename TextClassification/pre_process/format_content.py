@@ -3,7 +3,7 @@
 from tqdm import tqdm
 import pickle
 
-UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
+UNK, PAD = '<UNK>', '<PAD>'  # unknown word, padding character
 
 
 def _build_vocab(file_path, tokenizer, max_vocab_size, min_word_freq, line_sep):
@@ -48,8 +48,8 @@ def _line_to_number(content, tokenizer, vocab_dic, pad_size):
     return words_line, seq_len
 
 
-def format_content(file_path, if_with_label, train_granularity, build_vocab, vocab_save_path,
-                   max_vocab_size, min_word_freq, pad_size, line_sep, word_sep=" "):
+def format_content(file_path, train_granularity, build_vocab, vocab_save_path,
+                   max_vocab_size, min_word_freq, pad_size, line_sep, if_with_label=True, word_sep=" "):
     if train_granularity == "word":
         tokenizer = lambda x: x.split(word_sep)
     elif train_granularity == "char":

@@ -25,15 +25,17 @@ def evaluate(model, data_iter, metric_func):
     return metric, loss_total / len(data_iter)
 
 
-def train(train_iter, dev_iter, model, optimizer, num_epochs, metric_func, model_save_path, early_stopping_batch):
+def train(train_iter, dev_iter, model, learning_rate, num_epochs, metric_func, model_save_path, early_stopping_batch,
+          every_batch=100):
     start_time = datetime.now()
     model.train()
-    # optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     total_batch = 0  # 记录进行到多少batch
     dev_best_loss = float('inf')
     last_improve = 0  # 记录上次验证集loss下降的batch数
     flag = False  # 记录是否很久没有效果提升
+    train_ret, valid_ret = {"loss": [], "metric": []}, {"loss": [], "metric": []}
     for epoch in range(num_epochs):
         print('Epoch [{}/{}]'.format(epoch + 1, num_epochs))
         for i, (trains, labels) in enumerate(train_iter):
@@ -42,7 +44,7 @@ def train(train_iter, dev_iter, model, optimizer, num_epochs, metric_func, model
             loss = F.cross_entropy(outputs, labels)
             loss.backward()
             optimizer.step()
-            if total_batch % 100 == 0:
+            if total_batch % every_batch == 0:
                 # 每多少轮输出在训练集和验证集上的效果
                 y_true = labels.data.cpu()
                 y_pred = torch.max(outputs.data, 1)[1].cpu()
@@ -57,15 +59,20 @@ def train(train_iter, dev_iter, model, optimizer, num_epochs, metric_func, model
                 msg = f'Iter: {total_batch},  Train Loss: {loss.item():.4},  Train metric: {train_metric:.4}, ' \
                       f' Val Loss: {dev_loss:.4},  Val metric: {dev_metric:.4},  Time: {(end_time-start_time).seconds}'
                 print(msg)
+                train_ret["loss"].append(loss.item())
+                train_ret["metric"].append(train_metric)
+                valid_ret["loss"].append(dev_loss)
+                valid_ret["metric"].append(dev_metric)
                 model.train()  # modify back train mode
             total_batch += 1
             if total_batch - last_improve > early_stopping_batch:
                 # 验证集loss超过1000batch没下降，结束训练
-                print("No optimization for a long time, auto-stopping...")
+                print(f"No optimization for {early_stopping_batch} batch, auto-stopping...")
                 flag = True
                 break
         if flag:
             break
+    return train_ret, valid_ret
 
 
 def predict(model, test_iter, model_save_path):
