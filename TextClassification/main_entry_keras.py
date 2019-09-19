@@ -9,7 +9,6 @@ from keras.models import Sequential
 from keras import optimizers
 
 from pre_process.format_content import format_content
-# from models.text_rnn import TextRNN
 from utils.split_data import split_data
 from config import PARAM, BASE_MODEL_DIR, SAVE_RESULT, LOG_PATH
 
@@ -58,37 +57,57 @@ if __name__ == "__main__":
 
     test_pre_result, _ = format_content(test_path, build_vocab=False, **PARAM["format_content"])
 
+    n_classes = 10
     train_x = np.array([np.array(i[0]) for i in train_pre_result], dtype=int)
     train_y = np.array([np.array(i[2]) for i in train_pre_result], dtype=int)
+    train_y = np.eye(n_classes, dtype=int)[train_y]
 
     valid_x = np.array([np.array(i[0]) for i in valid_pre_result], dtype=int)
     valid_y = np.array([np.array(i[2]) for i in valid_pre_result], dtype=int)
+    valid_y = np.eye(n_classes, dtype=int)[valid_y]
 
     test_x = np.array([np.array(i[0]) for i in test_pre_result], dtype=int)
     test_y = np.array([np.array(i[2]) for i in test_pre_result], dtype=int)
+    test_y = np.eye(n_classes, dtype=int)[test_y]
+
+    # model = Sequential()
+    # model.add(layers.Embedding(input_dim=vocab_size, output_dim=300, input_length=32))
+    # model.add(layers.LSTM(32))
+    # model.add(layers.Dense(10, activation="softmax"))
 
     model = Sequential()
     model.add(layers.Embedding(input_dim=vocab_size, output_dim=300, input_length=32))
-    model.add(layers.LSTM(32))
+    model.add(layers.Bidirectional(layers.LSTM(32, return_sequences=True)))
+    model.add(layers.Bidirectional(layers.LSTM(32)))
     model.add(layers.Dense(10, activation="softmax"))
 
     model.summary()
 
     optimizer = optimizers.Adam(lr=1e-3)
     model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"])
-    history = model.fit(x=train_x, y=train_y, batch_size=128, epochs=1, verbose=1, validation_data=(valid_x, valid_y))
+    history = model.fit(x=train_x[:10000], y=train_y[:10000], batch_size=128, epochs=1, verbose=1,
+                        validation_data=(valid_x, valid_y))
 
-    if SAVE_RESULT:
-        df_ret = pd.DataFrame({"model_name": [PARAM["model"]["model_name"]],
-                               "train_time": [cost_sec],
-                               "test_metric": [test_metric],
-                               "train_ret": [train_ret],
-                               "valid_ret": [valid_ret],
-                               "param": [PARAM],
-                               "framework": [PARAM["framework"]]})
-        df_ret = df_ret[["model_name", "framework", "train_time", "test_metric", "param", "train_ret", "valid_ret"]]
-        if not os.path.exists(LOG_PATH):
-            df_ret.to_csv(LOG_PATH, sep="\t", index=None)
-        else:
-            df_ret.to_csv(LOG_PATH, sep="\t", index=None, header=False, mode="a+")
+    import shap
+
+    # we use the first 100 training examples as our background dataset to integrate over
+    explainer = shap.DeepExplainer(model, x_train[:100])
+
+    # explain the first 10 predictions
+    # explaining each prediction requires 2 * background dataset size runs
+    shap_values = explainer.shap_values(x_test[:10])
+
+    # if SAVE_RESULT:
+    #     df_ret = pd.DataFrame({"model_name": [PARAM["model"]["model_name"]],
+    #                            "train_time": [cost_sec],
+    #                            "test_metric": [test_metric],
+    #                            "train_ret": [train_ret],
+    #                            "valid_ret": [valid_ret],
+    #                            "param": [PARAM],
+    #                            "framework": [PARAM["framework"]]})
+    #     df_ret = df_ret[["model_name", "framework", "train_time", "test_metric", "param", "train_ret", "valid_ret"]]
+    #     if not os.path.exists(LOG_PATH):
+    #         df_ret.to_csv(LOG_PATH, sep="\t", index=None)
+    #     else:
+    #         df_ret.to_csv(LOG_PATH, sep="\t", index=None, header=False, mode="a+")
 
