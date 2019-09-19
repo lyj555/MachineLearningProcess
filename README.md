@@ -221,21 +221,23 @@
 
 目前超参数的选择应该是有四种方式（个人总结），分别为网格搜索、随机搜素、BayesianOptimization和Hyper-parameter Optimizationt方式。
 
-- 网格搜索（已代码实现）
+- 网格搜索
 
   sklearn的实现方式[`GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV)，但是输入的数据必须要做K折交叉验证，往往比较耗时。
 
-- 随机搜索（已代码实现）
+- 随机搜索
 
   slearn的实现方式[`RandomizedSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html#sklearn.model_selection.RandomizedSearchCV)，类似sklearn的网格搜索，需要做交叉验证，但是不需要遍历所有的网格参数，这样很大程度可以加快超参数的选择时间。
 
-- BayesianOptimization（已代码实现）
+- BayesianOptimization
 
   [BayesianOptimization](https://github.com/fmfn/BayesianOptimization)构建需要优化的函数的先验分布（高斯过程），随着迭代论述的增加，先验分布发生改变，算法逐步缩小需要优化的参数空间，从而找到最优参数集。可参考本项目当前目录下`ParamBayesOptimization.md`
 
 - Hyper-parameter Optimization
 
   [Hyper-parameter Optimization](https://github.com/hyperopt/hyperopt) is a Python library for optimizing over awkward search spaces with real-valued, discrete, and conditional dimensions.
+
+> 网格搜索和随机搜索以及基于spark的分布式版本均已代码实现，BayesianOptimization和Hyper-parameter Optimization基于其开源包结合自己的逻辑进行了封装，也已经代码实现。
 
 #### 5.1.5 模型选择
 
@@ -252,9 +254,33 @@
 
 ### 5.2 深度学习
 
+#### 5.2.1 数据探查及处理
+
+##### 5.2.1.1 NLP
+
+##### 5.2.1.2 图像
+
+#### 5.2.2 模型选择
+
+#### 5.2.3 超参数选择
+
+#### 5.2.4 案例
+
+##### 5.2.4.1 文本分类
+
+##### 5.2.4.2 图像分类
+
+##### 5.2.4.3 机器翻译
+
 
 
 ## 6. 模型的解释
+
+### 6.1 树模型
+
+### 6.2 深度模型
+
+
 
 ## 7. 模型线上部署以及测试
 
