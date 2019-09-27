@@ -94,3 +94,23 @@ if __name__ == "__main__":
         else:
             df_ret.to_csv(LOG_PATH, sep="\t", index=None, header=False, mode="a+")
 
+
+    # load model
+    # clf = TextRNN(vocab_size=vocab_size, **PARAM["model"])
+    # clf.load_state_dict(torch.load(PARAM["train"]["model_save_path"]))
+    #
+    # import shap
+    # import numpy as np
+    #
+    # for x, y in train_iter:
+    #     train_x = x[:100]
+    #     train_y = y[:100]
+    #     break
+    #
+    # for x, y in test_iter:
+    #     test_x = x[:100]
+    #     test_y = y[:100]
+    #     break
+    #
+    # explainer = shap.DeepExplainer(clf, train_x)
+    # shap_values = explainer.shap_values(test_x)

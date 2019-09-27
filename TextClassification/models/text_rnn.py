@@ -13,7 +13,7 @@ class TextRNN(nn.Module):
         self.model_name = model_name
 
     def forward(self, x):
-        x, _ = x
+        # x, _ = x
         out = self.embedding(x)  # [batch_size, seq_len, embedding_dim]=[128, 32, 300]
         out, _ = self.lstm(out)
         out = self.fc(out[:, -1, :])  # 句子最后时刻的 hidden state

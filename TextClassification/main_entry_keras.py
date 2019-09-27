@@ -96,6 +96,7 @@ if __name__ == "__main__":
     # explain the first 10 predictions
     # explaining each prediction requires 2 * background dataset size runs
     shap_values = explainer.shap_values(x_test[:10])
+    shap.image_plot()
 
     # if SAVE_RESULT:
     #     df_ret = pd.DataFrame({"model_name": [PARAM["model"]["model_name"]],
