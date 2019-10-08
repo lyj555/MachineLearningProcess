@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='model-helper',
-    version='0.0.2',
+    version='0.0.3',
     url='https://github.com/lyj555/MachineLearningProcess',
     packages=find_packages(),
     author='liuyongjie',
@@ -16,6 +16,6 @@ setup(
         "pandas >= 0.23.0",
         "numpy >= 1.10.0",
         "scikit-learn >= 0.19.0",
-        "shap >= 0.30.0"
+        "shap == 0.30.0"
     ],
 )
