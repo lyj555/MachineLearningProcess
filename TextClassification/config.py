@@ -22,7 +22,7 @@ model_save_path = os.path.join(BASE_MODEL_DIR, f"{model_name}_{train_granularity
 
 PARAM = {
     "framework": "torch",
-    "data_process": {"raw_data_path": "./data/THUCNews/train.txt",
+    "data_process": {"raw_data_path": "./data/THUCNews/model_component.txt",
                      "line_sep": line_sep},
     "get_train_valid_test": {"split_ratio": (0.6, 0.2, 0.2), "random_state": random_state, "line_sep": line_sep},
     "format_content": {"train_granularity": train_granularity, "vocab_save_path": vocab_save_path,
@@ -31,7 +31,7 @@ PARAM = {
     "DataIterator": {"batch_size": 128},
     "model": {"model_name": "text_rnn", "embedding_dim": 300, "hidden_size": 128, "num_layers": 2,
               "dropout": 0.5, "num_classes": 10},
-    "train": {"learning_rate": 1e-3, "num_epochs": 1, "early_stopping_batch": 100*10, "metric_func": accuracy_score,
+    "model_component": {"learning_rate": 1e-3, "num_epochs": 1, "early_stopping_batch": 100*10, "metric_func": accuracy_score,
               "model_save_path": model_save_path}
 }
 

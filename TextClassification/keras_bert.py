@@ -100,7 +100,7 @@ model.summary()
 
 import pandas as pd
 
-df_train = pd.read_csv("./data/THUCNews/model/train.txt", names=["content", "label"], sep="\t", nrows=1000)
+df_train = pd.read_csv("./data/THUCNews/model/model_component.txt", names=["content", "label"], sep="\t", nrows=1000)
 df_valid = pd.read_csv("./data/THUCNews/model/valid.txt", names=["content", "label"], sep="\t", nrows=100)
 
 train_data = list(df_train.itertuples(index=False, name=None))

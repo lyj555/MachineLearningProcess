@@ -34,7 +34,7 @@ def data_process(raw_data_path, line_sep):
 def get_train_valid_test(data_path, line_sep, split_ratio, random_state):
     df = pd.read_csv(data_path, header=None, names=["content", "label"], sep=line_sep)
     train, valid, test = split_data(df, split_ratio, random_state)
-    train_path = os.path.join(BASE_MODEL_DIR, "train.txt")
+    train_path = os.path.join(BASE_MODEL_DIR, "model_component.txt")
     train.to_csv(train_path, sep=line_sep, index=None, header=False, encoding="utf-8")
     valid_path = os.path.join(BASE_MODEL_DIR, "valid.txt")
     valid.to_csv(valid_path, sep=line_sep, index=None, header=False, encoding="utf-8")
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # [1] data process, like word segmentation, transform data format, etc.
     pre_path = data_process(**PARAM["data_process"])
 
-    # [2] split data into train/valid/test, can be cut into multiple data sets as needed
+    # [2] split data into model_component/valid/test, can be cut into multiple data sets as needed
     train_path, valid_path, test_path = get_train_valid_test(data_path=pre_path, **PARAM["get_train_valid_test"])
 
     # [3] according to cutting data, format the content, including cut or pad the content by pad_size or build vocabulary etc.

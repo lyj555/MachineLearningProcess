@@ -63,7 +63,7 @@ def train(train_iter, dev_iter, model, learning_rate, num_epochs, metric_func, m
                 train_ret["metric"].append(train_metric)
                 valid_ret["loss"].append(dev_loss)
                 valid_ret["metric"].append(dev_metric)
-                model.train()  # modify back train mode
+                model.train()  # modify back model_component mode
             total_batch += 1
             if total_batch - last_improve > early_stopping_batch:
                 # 验证集loss超过1000batch没下降，结束训练
