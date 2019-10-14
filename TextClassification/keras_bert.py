@@ -100,7 +100,7 @@ model.summary()
 
 import pandas as pd
 
-df_train = pd.read_csv("./data/THUCNews/model/model_component.txt", names=["content", "label"], sep="\t", nrows=1000)
+df_train = pd.read_csv("./data/THUCNews/model/train.txt", names=["content", "label"], sep="\t", nrows=1000)
 df_valid = pd.read_csv("./data/THUCNews/model/valid.txt", names=["content", "label"], sep="\t", nrows=100)
 
 train_data = list(df_train.itertuples(index=False, name=None))
@@ -132,7 +132,7 @@ explainer = shap.DeepExplainer(model, backgroud_sample)
 # explaining each prediction requires 2 * background dataset size runs
 shap_values = explainer.shap_values(x_test[:10])
 
-from keras import backend as K
+from keras_model import backend as K
 seq_len=14
 
 shape = y_pred[:, :, :].shape

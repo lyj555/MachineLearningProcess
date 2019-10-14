@@ -25,7 +25,7 @@ class DataIterator(object):
         y = torch.LongTensor([i[2] for i in data]).to(self.device)
 
         # pad前的长度(超过pad_size的设为pad_size)
-        # seq_len = torch.LongTensor([_[1] for _ in data]).to(self.device)
+        # seq_len = torch_model.LongTensor([_[1] for _ in data]).to(self.device)
         # return (x, seq_len), y
         return x, y
 

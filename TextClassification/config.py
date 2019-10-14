@@ -21,8 +21,8 @@ model_save_path = os.path.join(BASE_MODEL_DIR, f"{model_name}_{train_granularity
 
 
 PARAM = {
-    "framework": "torch",
-    "data_process": {"raw_data_path": "./data/THUCNews/model_component.txt",
+    "framework": "torch_model",
+    "data_process": {"raw_data_path": "./data/THUCNews/train.txt",
                      "line_sep": line_sep},
     "get_train_valid_test": {"split_ratio": (0.6, 0.2, 0.2), "random_state": random_state, "line_sep": line_sep},
     "format_content": {"train_granularity": train_granularity, "vocab_save_path": vocab_save_path,

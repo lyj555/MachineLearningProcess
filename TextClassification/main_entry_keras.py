@@ -4,11 +4,11 @@ import os
 import numpy as np
 from datetime import datetime
 import pandas as pd
-from keras import layers
-from keras.models import Sequential
 from keras import optimizers
+from keras.callbacks import EarlyStopping
 
 from pre_process.format_content import format_content
+from keras_model.models.text_rnn import text_rnn
 from utils.split_data import split_data
 from config import PARAM, BASE_MODEL_DIR, SAVE_RESULT, LOG_PATH
 
@@ -34,7 +34,7 @@ def data_process(raw_data_path, line_sep):
 def get_train_valid_test(data_path, line_sep, split_ratio, random_state):
     df = pd.read_csv(data_path, header=None, names=["content", "label"], sep=line_sep)
     train, valid, test = split_data(df, split_ratio, random_state)
-    train_path = os.path.join(BASE_MODEL_DIR, "model_component.txt")
+    train_path = os.path.join(BASE_MODEL_DIR, "train.txt")
     train.to_csv(train_path, sep=line_sep, index=None, header=False, encoding="utf-8")
     valid_path = os.path.join(BASE_MODEL_DIR, "valid.txt")
     valid.to_csv(valid_path, sep=line_sep, index=None, header=False, encoding="utf-8")
@@ -70,33 +70,16 @@ if __name__ == "__main__":
     test_y = np.array([np.array(i[2]) for i in test_pre_result], dtype=int)
     test_y = np.eye(n_classes, dtype=int)[test_y]
 
-    # model = Sequential()
-    # model.add(layers.Embedding(input_dim=vocab_size, output_dim=300, input_length=32))
-    # model.add(layers.LSTM(32))
-    # model.add(layers.Dense(10, activation="softmax"))
-
-    model = Sequential()
-    model.add(layers.Embedding(input_dim=vocab_size, output_dim=300, input_length=32))
-    model.add(layers.Bidirectional(layers.LSTM(32, return_sequences=True)))
-    model.add(layers.Bidirectional(layers.LSTM(32)))
-    model.add(layers.Dense(10, activation="softmax"))
-
+    model = text_rnn(vocab_size=vocab_size, max_len=32, embedding_dim=300, class_num=10,
+                     rnn_block="lstm", layer_num=2, bidirection=True, units=32)
     model.summary()
 
     optimizer = optimizers.Adam(lr=1e-3)
     model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"])
-    history = model.fit(x=train_x[:10000], y=train_y[:10000], batch_size=128, epochs=1, verbose=1,
-                        validation_data=(valid_x, valid_y))
 
-    import shap
-
-    # we use the first 100 training examples as our background dataset to integrate over
-    explainer = shap.DeepExplainer(model, x_train[:100])
-
-    # explain the first 10 predictions
-    # explaining each prediction requires 2 * background dataset size runs
-    shap_values = explainer.shap_values(x_test[:10])
-    shap.image_plot()
+    early_stopping = EarlyStopping(monitor='val_acc', patience=3, mode='max')
+    history = model.fit(x=train_x[:1000], y=train_y[:1000], batch_size=128, epochs=1, verbose=1,
+                        validation_data=(valid_x, valid_y), callbacks=[early_stopping])
 
     # if SAVE_RESULT:
     #     df_ret = pd.DataFrame({"model_name": [PARAM["model"]["model_name"]],
@@ -111,4 +94,3 @@ if __name__ == "__main__":
     #         df_ret.to_csv(LOG_PATH, sep="\t", index=None)
     #     else:
     #         df_ret.to_csv(LOG_PATH, sep="\t", index=None, header=False, mode="a+")
-

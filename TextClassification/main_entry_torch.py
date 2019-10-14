@@ -6,10 +6,10 @@ import pandas as pd
 import torch
 
 from pre_process.format_content import format_content
-from models.torch.text_rnn import TextRNN
-from model_component.torch.torch_train import train, predict
+from torch_model.models.text_rnn import TextRNN
+from torch_model.torch_train import train, predict
 from utils.split_data import split_data
-from utils.torch_iterator import DataIterator
+from torch_model.torch_iterator import DataIterator
 from config import PARAM, BASE_MODEL_DIR, SAVE_RESULT, LOG_PATH
 
 
@@ -35,7 +35,7 @@ def data_process(raw_data_path, line_sep):
 def get_train_valid_test(data_path, line_sep, split_ratio, random_state):
     df = pd.read_csv(data_path, header=None, names=["content", "label"], sep=line_sep)
     train, valid, test = split_data(df, split_ratio, random_state)
-    train_path = os.path.join(BASE_MODEL_DIR, "model_component.txt")
+    train_path = os.path.join(BASE_MODEL_DIR, "train.txt")
     train.to_csv(train_path, sep=line_sep, index=None, header=False, encoding="utf-8")
     valid_path = os.path.join(BASE_MODEL_DIR, "valid.txt")
     valid.to_csv(valid_path, sep=line_sep, index=None, header=False, encoding="utf-8")
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     # load model
     # clf = TextRNN(vocab_size=vocab_size, **PARAM["model"])
-    # clf.load_state_dict(torch.load(PARAM["model_component"]["model_save_path"]))
+    # clf.load_state_dict(torch_model.load(PARAM["model_component"]["model_save_path"]))
     #
     # import shap
     # import numpy as np
