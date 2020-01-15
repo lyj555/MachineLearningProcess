@@ -1,2 +1,5 @@
 0.0.2 add rf_explain.py
 0.0.3 add deep_explain.py script, add method explain_image_plot
+2019.10.29 0.0.4 add method `explain_text_model`, explain input texts nlp model, but don't support keras's BERT
+2019.11.7 0.1.0 重构代码，加入分布式特征选择模块，一系列的优化，包括内存泄漏、数据分发等等
+2019.12.4 0.2.0 增加模型融合模块（Stacking/Blending/Bagging），修改前面模块的import方式以及部分函数的命名，为每一个模块增加tutorials的notebook

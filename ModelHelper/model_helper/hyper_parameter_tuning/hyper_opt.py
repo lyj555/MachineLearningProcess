@@ -52,13 +52,15 @@
 
 import numpy as np
 from sklearn.model_selection import train_test_split
-from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
 from ..utils.model_utils import cross_validation_score, valid_set_score
 
 
 def hyperopt_search(train_x, train_y, model, param_space, n_iter, k_fold=None, create_valid=False, valid_ratio=None,
                     valid_x=None, valid_y=None, metric_func=None, random_state=None):
+    from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
+    if k_fold is None and not callable(metric_func):
+        raise ValueError("if k_fold set None, param metric_func must be callable object!")
     if random_state is not None:
         np.random.seed(random_state)
 
@@ -68,10 +70,11 @@ def hyperopt_search(train_x, train_y, model, param_space, n_iter, k_fold=None, c
 
     def optimize_func(param_space):
         if k_fold is not None:
-            ret = cross_validation_score(train_x, train_y, k_fold, model, model_param=param_space)
+            ret = cross_validation_score(train_x, train_y, k_fold, model, model_param=param_space,
+                                         random_state=random_state)
         else:
             ret = valid_set_score(train_x, train_y, valid_x, valid_y, model=model,
-                                  metric_func=metric_func, model_param=param_space)
+                                  metric_func=metric_func, model_param=param_space)[0]
         return {"loss": -ret, "status": STATUS_OK, "stuff": {"param": param_space, "effect": ret}}
 
     trials = Trials()
@@ -89,6 +92,7 @@ def hyperopt_search(train_x, train_y, model, param_space, n_iter, k_fold=None, c
 if __name__ == "__main__":
     from sklearn.datasets import make_classification
     from sklearn.ensemble import RandomForestClassifier
+    from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
 
     def _create_data():

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . import FeatureSelection, HyperparameterTuning
+from . import feature_selection, hyper_parameter_tuning, model_ensemble, model_explain
 
-__all__ = ["FeatureSelection", "HyperparameterTuning"]
-__version__ = "0.0.1"
+__all__ = ["feature_selection", "hyper_parameter_tuning", "model_ensemble", "model_explain"]
+__version__ = "0.2.0"

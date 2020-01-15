@@ -42,9 +42,9 @@ def explain_image_plot(images, model, background_sample, filter_blank=False, bla
                        row_scale=3, col_scale=3, fontsize=10, back_alpha=0.15, hspace=0.2, show=True):
     """
     explain model images
-    :param images: numpy.array, (batch_size, ...)
+    :param images: numpy.ndarray, (batch_size, ...)
     :param model: keras model,
-    :param background_sample: numpy.array, (batch_size, ...), suggest randomly select 100 samples, the more the samples,
+    :param background_sample: numpy.ndarray, (batch_size, ...), suggest randomly select 100 samples, the more the samples,
     the lower the shap computation speed, the more precise shap plot.
     :param filter_blank: bool, set False, means all predict position will be explained, set True, omit some position
     :param blank_index_list: Iterable, valid only filter_blank = True
@@ -157,6 +157,91 @@ def explain_image_plot(images, model, background_sample, filter_blank=False, bla
     if show:
         plt.show()
     return fig, axes
+
+
+def _get_nlp_shap_matrix(model, background_sample, samples):
+    explainer = shap.DeepExplainer(model, background_sample)
+    shap_values, indexs = explainer.shap_values(samples, ranked_outputs=1)
+    return shap_values[0], indexs
+
+
+def explain_text_model(texts, model, background_sample, vocab_dic=None, explain_padding_index=True,
+                       padding_index=None, label_dic=None, strategy=None, top_n_words=10):
+    """
+    explain nlp model texts
+    :param texts: numpy.ndarray, ndim == 2, batch_size*length
+    :param model: keras model
+    :param background_sample: numpy.ndarray, (batch_size, ...), suggest randomly select 100 samples
+    :param vocab_dic: None or dict, vocabulary dic, key is number, value is word meaning, default None.
+    :param explain_padding_index: bool, if show padding index, default True.
+    :param padding_index: None or int, only valid when param explain_padding_index set False, default None.
+    :param label_dic: None or dict, label dic, key is index, value is label meaning, default None.
+    :param strategy: None, min, max or abs. None means show input texts, min means show the words that has minimum
+    shap value, max means maximum shap value, abs means show  maximum absolute shap value, default None.
+    :param top_n_words: int, only valid when strategy is not None, default 10
+    :return: list(tuple), [(words, shaps, label), ..., (words, shaps, label)]
+    """
+    assert isinstance(model, Model), "input model must be keras like model!"
+    assert strategy is None or strategy in ("max", "min", "abs"), "input param strategy must be None or in ('max', 'min', 'abs')!"
+    assert top_n_words >= 1, "input param top_n_words must greater than or equal 1!"
+    assert texts.ndim == 2, "input texts's ndim must be 2, batch_size*text_length!"
+    output_dimension = model.layers[-1].output.shape[1:]  # exclude the batch_size dimension
+    assert len(output_dimension) == 1, "the model's output dimension must be 1!"
+    if not explain_padding_index:
+        assert padding_index is not None, "when param explain_padding_index set True, padding_index can not be None!"
+
+    shap_values, indexs = _get_nlp_shap_matrix(model, background_sample, texts)
+    # shap_values: batch_size*length
+    # indexs: batch_size*1
+
+    ret = []
+    for i in range(len(texts)):
+        shap_index = indexs[i][0]
+        predict_label = shap_index if label_dic is None else label_dic[shap_index]
+        one_sample_shap = shap_values[i]  # length
+
+        if vocab_dic is None:
+            if explain_padding_index:
+                pair = (texts[i], one_sample_shap, predict_label)
+
+            else:  # exclude padding index
+                words, shaps = [], []
+                for word_index, shap_val in zip(texts[i], one_sample_shap):
+                    if word_index != padding_index:
+                        words.append(word_index)
+                        shaps.append(shap_val)
+                pair = (words, shaps, predict_label)
+        else:
+            if explain_padding_index:
+                words = [vocab_dic[j] for j in texts[i]]
+                pair = (words, one_sample_shap, predict_label)
+            else:  # exclude padding index
+                words, shaps = [], []
+                for word_index, shap_val in zip(texts[i], one_sample_shap):
+                    if word_index != padding_index:
+                        words.append(vocab_dic[word_index])
+                        shaps.append(shap_val)
+                pair = (words, shaps, predict_label)
+        ret.append(pair)
+
+        if strategy == "max":
+            filter_ret = []
+            for words, shaps, label in ret:
+                orders = sorted(range(len(words)), key=lambda x: -shaps[x])[:top_n_words]
+                filter_ret.append((list(np.array(words)[orders]), list(shaps[orders]), label))
+        elif strategy == "min":
+            filter_ret = []
+            for words, shaps, label in ret:
+                orders = sorted(range(len(words)), key=lambda x: shaps[x])[:top_n_words]
+                filter_ret.append((list(np.array(words)[orders]), list(shaps[orders]), label))
+        elif strategy == "abs":
+            filter_ret = []
+            for words, shaps, label in ret:
+                orders = sorted(range(len(words)), key=lambda x: -abs(shaps[x]))[:top_n_words]
+                filter_ret.append((list(np.array(words)[orders]), list(shaps[orders]), label))
+        else:
+            filter_ret = ret
+    return filter_ret
 
 
 # if __name__ == "__main__":

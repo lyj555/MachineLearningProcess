@@ -19,8 +19,7 @@ def filter_feature_series(feat_series, threshold, max_features, greater_than_and
 
 def generate_random_list(alternative_list, sample, min_num, p=None):
     length = len(alternative_list)
-    if min_num >= length:
-        return None
+    assert length > min_num, f"the input list's length {length} should greater than min_num {min_num}!"
 
     if sample is None:
         sample_num = np.random.randint(min_num, length, 1)[0]
@@ -29,8 +28,8 @@ def generate_random_list(alternative_list, sample, min_num, p=None):
     elif sample >= 1:
         sample_num = sample
 
-    if min_num >= sample_num:
-        return None
+    if min_num > sample_num:
+        raise ValueError(f"sample num {sample_num} should greater than min num {min_num}!")
     subset = np.random.choice(alternative_list, size=(sample_num, ), replace=False, p=p)
     return subset
 

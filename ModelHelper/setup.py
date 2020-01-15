@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='model-helper',
-    version='0.0.3',
+    version='0.1.0',
     url='https://github.com/lyj555/MachineLearningProcess',
     packages=find_packages(),
     author='liuyongjie',

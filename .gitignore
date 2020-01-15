@@ -5,3 +5,8 @@ ModelHelper/test_distributed/
 TextClassification/data/THUCNews/model
 TextClassification/chinese_L-12_H-768_A-12.zip
 TextClassification/chinese_L-12_H-768_A-12/
+log.txt
+*.tar.gz
+*.zip
+*.ipynb_checkpoints
+

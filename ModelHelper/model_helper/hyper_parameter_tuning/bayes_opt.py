@@ -3,13 +3,14 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from bayes_opt import BayesianOptimization
-
 from ..utils.model_utils import cross_validation_score, valid_set_score
 
 
 def bayes_search(train_x, train_y, model, param_space, n_iter, k_fold=None, create_valid=False, valid_ratio=None,
                  valid_x=None, valid_y=None, metric_func=None, random_state=None):
+    from bayes_opt import BayesianOptimization
+    if k_fold is None and not callable(metric_func):
+        raise ValueError("if k_fold set None, param metric_func must be callable object!")
     if random_state is not None:
         np.random.seed(random_state)
     param_bounds, param_types = {}, {}
@@ -27,10 +28,10 @@ def bayes_search(train_x, train_y, model, param_space, n_iter, k_fold=None, crea
             kwargs[i] = param_types[i](kwargs[i])
 
         if k_fold is not None:
-            ret = cross_validation_score(train_x, train_y, k_fold, model, model_param=kwargs)
+            ret = cross_validation_score(train_x, train_y, k_fold, model, model_param=kwargs, random_state=random_state)
         else:
             ret = valid_set_score(train_x, train_y, valid_x, valid_y, model=model,
-                                  metric_func=metric_func, model_param=kwargs)
+                                  metric_func=metric_func, model_param=kwargs)[0]
         return ret
 
     optimizer = BayesianOptimization(
