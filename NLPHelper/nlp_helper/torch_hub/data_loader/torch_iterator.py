@@ -26,7 +26,10 @@ class TorchDataset(Dataset):
         :param transform_type: tensor type
         :return:
         """
-        return transform_type(data).to(self.device)
+        if data.ndim == 0:  # np.array(4), ndim is 0
+            return transform_type([data.tolist()]).to(self.device)
+        else:
+            return transform_type(data).to(self.device)
 
     def __len__(self):
         return self.data_size

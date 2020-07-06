@@ -228,8 +228,8 @@ class BiLSTM_FC(torch.nn.Module):
 
 
 def main_entry():
-    save_dir = "./data/ner"
-    vocab_file_path = "./data/ner/cluener_public/train.json"
+    save_dir = "./data/cluener"
+    vocab_file_path = "./data/cluener/train.json"
     tokenizer = lambda x: x  # 输入是list, 相当于已经tokenize
 
     # 1. 构建词典
@@ -246,9 +246,9 @@ def main_entry():
 
     # 2. 构造训练、验证和测试数据
     #    构造三部分数据并将其转换为ID
-    train_path = "./data/ner/cluener_public/train.json"
-    valid_path = "./data/ner/cluener_public/dev.json"
-    test_path = "./data/ner/cluener_public/test.json"
+    train_path = "./data/cluener/train.json"
+    valid_path = "./data/cluener/dev.json"
+    test_path = "./data/cluener/test.json"
     batch_size = 128
 
     train_x, train_y, train_lengths = raw_data_to_model(train_path, tokenizer, word2id, tag2id, batch_size)
@@ -279,7 +279,7 @@ def main_entry():
     print(model)
 
     # 4. 模型训练
-    num_epochs = 2
+    num_epochs = 15
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
     model_save_path = os.path.join(save_dir, "bilstm_model.pt")
@@ -291,21 +291,23 @@ def main_entry():
     clf = SelfModel(model=model)
     t1 = datetime.now()
     clf.train(train_iter, num_epochs, loss=loss, optimizer=optimizer, valid_iter=valid_iter,
-              early_stopping_batch=30, batch_check_frequency=2,
-              print_every_batch=3, model_save_path=model_save_path, device=device)
+              early_stopping_batch=20, batch_check_frequency=2,
+              print_every_batch=5, model_save_path=model_save_path, device=device)
     t2 = datetime.now()
     print(f"train cost {(t2-t1).seconds} seconds")
+    # Epoch Num [15/15], Batch num [74/84]: train loss is 0.007343922342572894 valid loss is 0.4827855717052113
+    # Epoch Num [15/15], Batch num [84/84]: train loss is 0.009148890063876198 valid loss is 0.5322624553333629
+    # train cost 616 seconds
 
     # 5. 模型评估
     ## 5.1 解码  涉及到crf的解码，没有使用内置的evaluate，自己调用模型进行预测然后进行解码
-    decode = model.crf.viterbi_decode
     id2tag_dic = {id_: tag for tag, id_ in tag2id.items()}
     #  y_score, y_true = evaluate(clf.model, train_iter, y_score_processor=get_max_prob_index)
     y_score, y_true = [], []
     for sent, leng, y_true_ in valid_iter:
         y_true_ = y_true_.cpu()
         crf_score = clf.model(sent.to(device), leng.to(device))
-        y_score_tag = decode(crf_score.cpu(), sent.gt(0).cpu())[1]
+        y_score_tag = decode(crf_score.cpu())
 
         lengs = leng.cpu().numpy()
         for i in range(len(lengs)):  # 遍历样本
@@ -315,6 +317,8 @@ def main_entry():
     ## 5.2 评估指标
     metrices = evaluate_all_sentence(y_true, y_score)
     print(f"recall is {metrices[0]}, precision is {metrices[1]}, f1 is {metrices[2]}")
+    # 3072 2559 1696, 共有3072个实体, 模型识别的实体为2559个, 其中有1696个实体识别正确
+    # recall is 0.5520833333333334, precision is 0.662758890191481, f1 is 0.6023301029602257
 
     ## 6. 预测
     # 没有测试集的预测, 参考./main_torch_bilstm_crf_clue.py文件

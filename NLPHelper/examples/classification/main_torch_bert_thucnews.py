@@ -49,7 +49,7 @@ def get_bert_optimizer(named_parameters, learning_rate, t_total):
 
 
 def main_entry(save_dir):
-    bert_pretrain_path = "./data/bert_pretrain_file"
+    bert_pretrain_path = "./data/bert_pretrain_file/torch"
     # seed_everything(987, use_np=True, use_cpu=True, use_gpu=False)
     # [1]. 创建词汇表字典
     # [1.1]. 无词汇表，从指定文件创建并保存
@@ -97,7 +97,7 @@ def main_entry(save_dir):
     # valid_iter = self_iterator(batch_data=(valid_x, valid_y, ), batch_size=4)
     # test_iter = self_iterator(batch_data=(test_x, test_y), batch_size=4)
     batch_size = 128
-    small_sample_test = True
+    small_sample_test = False
     small_sample_num = 10000
     if small_sample_test:
         train_x, train_mask, train_y = train_x[:small_sample_num], train_mask[:small_sample_num], train_y[:small_sample_num]
@@ -109,12 +109,12 @@ def main_entry(save_dir):
     # [6]. 初始化模型
     seed_everything(1024, use_np=True, use_cpu=True, use_gpu=True)
 
-    model = Bert(bert_pretrain_path, hidden_size=768, num_classes=2)
+    model = Bert(bert_pretrain_path, hidden_size=768, num_classes=10)
     # init_network(model)
     print(model)
 
     # [7]. 模型训练
-    num_epochs = 3
+    num_epochs = 1
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_save_path = os.path.join(save_dir, "text_cnn_model.pt")  # "./data/THUCNews/text_cnn_model.pt"
     print("now the device is ", device)
@@ -125,10 +125,13 @@ def main_entry(save_dir):
     clf = SelfModel(model=model)
     t1 = datetime.now()
     clf.train(train_iter, num_epochs, loss=loss, optimizer=optimizer, valid_iter=valid_iter,
-              early_stopping_batch=100, batch_check_frequency=2,
-              print_every_batch=10, model_save_path=model_save_path, device=device)
+              early_stopping_epoch=1, batch_check_frequency=2,
+              print_every_batch=20, model_save_path=model_save_path, device=device)
     t2 = datetime.now()
     print(f"train cost {(t2-t1).seconds} seconds")
+    # Epoch Num [1/1], Batch num [1360/1407]: train loss is 0.11314889871235341 valid loss is 0.17904165726673754
+    # Epoch Num [1/1], Batch num [1400/1407]: train loss is 0.11242205112134639 valid loss is 0.17842706849303427
+    # train cost 24566 seconds
 
     # [8]. 模型预测
     # pred = clf.predict(data=train_iter, do_func=lambda x: x[0])
@@ -146,9 +149,9 @@ def main_entry(save_dir):
     y_score, y_true = evaluate(clf.model, test_iter, y_score_processor=get_max_prob_index)
     test_acc = accuracy_score(y_true, y_score)
     print(f"train accuracy is {train_acc}, valid accuracy is {valid_acc}, test accuracy is {test_acc}.")
+    # train accuracy is 0.9634777777777778, valid accuracy is 0.9406, test accuracy is 0.9461.
 
 
 if __name__ == "__main__":
-    print(os.listdir("./"))
-    save_dir = "/workspace/liuyongjie_dir"
+    save_dir = "./data/THUCNews"
     main_entry(save_dir)

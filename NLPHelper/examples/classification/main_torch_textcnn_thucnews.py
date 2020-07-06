@@ -69,8 +69,8 @@ def main_entry(save_dir):
     # valid_iter = self_iterator(batch_data=(valid_x, valid_y, ), batch_size=4)
     # test_iter = self_iterator(batch_data=(test_x, test_y), batch_size=4)
     batch_size = 128
-    small_sample_test = False
-    small_sample_num = 10000
+    small_sample_test = True
+    small_sample_num = 1000
     if small_sample_test:
         train_x, train_y = train_x[:small_sample_num], train_y[:small_sample_num]
 
@@ -125,6 +125,6 @@ def main_entry(save_dir):
 
 
 if __name__ == "__main__":
-    print(os.listdir("./"))
-    save_dir = "/workspace/liuyongjie_dir"
+    # print(os.listdir("./"))
+    save_dir = "./data/THUCNews"
     main_entry(save_dir)

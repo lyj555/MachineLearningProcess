@@ -139,7 +139,7 @@ def main_entry(save_dir):
     print(model)
 
     # [7]. 模型训练
-    num_epochs = 20
+    num_epochs = 6
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
     model_save_path = os.path.join(save_dir, "text_cnn_model.pt")  # "./data/THUCNews/text_cnn_model.pt"
@@ -155,6 +155,9 @@ def main_entry(save_dir):
               print_every_batch=10, model_save_path=model_save_path, device=device)
     t2 = datetime.now()
     print(f"train cost {(t2-t1).seconds} seconds")
+    # Epoch Num [6/6], Batch num [395/417]: train loss is 0.5875816802612598 valid loss is 1.1788143689119364
+    # Epoch Num [6/6], Batch num [415/417]: train loss is 0.5919032108297737 valid loss is 1.1893426436412184
+    # train cost 2202 seconds
 
     # [8]. 模型预测
     # pred = clf.predict(data=train_iter, do_func=lambda x: x[0])
@@ -172,8 +175,9 @@ def main_entry(save_dir):
     # y_score, y_true = evaluate(clf.model, test_iter, y_score_processor=get_max_prob_index)
     # test_acc = accuracy_score(y_true, y_score)
     print(f"train accuracy is {train_acc}, valid accuracy is {valid_acc}.")
+    # train accuracy is 0.8219827586206897, valid accuracy is 0.6129.
 
-    # [10]. 对测试集进行预测, 构造线上提交格式
+    # [10]. 对测试集进行预测, 构造线上cluemark提交格式, 提交到线上查看效果
     inverse_label_dic = {}
     for key, val in label_dic.items():
         inverse_label_dic[val["label_index"]] = {"label": key, "label_desc": val["label_desc"]}

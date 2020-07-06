@@ -202,8 +202,8 @@ def evaluate_all_sentence(y_true, y_score):
 
 
 def main_entry():
-    save_dir = "./data/ner"
-    vocab_file_path = "./data/ner/cluener_public/train.json"
+    save_dir = "./data/cluener"
+    vocab_file_path = "./data/cluener/train.json"
     tokenizer = lambda x: x  # 输入是list, 相当于已经tokenize
 
     # 1. 构建词典
@@ -220,9 +220,9 @@ def main_entry():
 
     # 2. 构造训练、验证和测试数据
     #    构造三部分数据并将其转换为ID
-    train_path = "./data/ner/cluener_public/train.json"
-    valid_path = "./data/ner/cluener_public/dev.json"
-    test_path = "./data/ner/cluener_public/test.json"
+    train_path = "./data/cluener/train.json"
+    valid_path = "./data/cluener/dev.json"
+    test_path = "./data/cluener/test.json"
     batch_size = 128
 
     train_x, train_y, train_lengths = raw_data_to_model(train_path, tokenizer, word2id, tag2id, batch_size)
@@ -254,10 +254,10 @@ def main_entry():
     print(model)
 
     # 4. 模型训练
-    num_epochs = 2
+    num_epochs = 15
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
-    model_save_path = os.path.join(save_dir, "bilstm_model.pt")
+    model_save_path = os.path.join(save_dir, "bilstm_crf_model.pt")
     print("now the device is ", device)
 
     loss = model.crf.loss
@@ -270,6 +270,8 @@ def main_entry():
               print_every_batch=3, model_save_path=model_save_path, device=device)
     t2 = datetime.now()
     print(f"train cost {(t2-t1).seconds} seconds")
+    # Epoch Num [15/15], Batch num [84/84]: train loss is 0.24247267132713682 valid loss is 13.60905595259233
+    # train cost 1064 seconds
 
     # 5. 模型评估
     ## 5.1 解码  涉及到crf的解码，没有使用内置的evaluate，自己调用模型进行预测然后进行解码
@@ -290,11 +292,11 @@ def main_entry():
     ## 5.2 评估指标
     metrices = evaluate_all_sentence(y_true, y_score)
     print(metrices)
-    # 3072 2909 1944
-    # (0.6328125, 0.6682708834651083, 0.6500585186423675)
+    # 3072 2909 1944   共有3072个实体, 模型识别的实体为2909个, 其中1944个预测正确
+    # (0.6328125, 0.6682708834651083, 0.6500585186423675)  分别为召回 精准和f1
 
     # 6. 预测
-    # 对测试集进行预测，然后将格式整理为cluemark的格式，提交到线上查看效果
+    # 对测试集进行预测，然后将格式整理为cluemark的格式，提交到线上查看测试集的效果
     with open(test_path, "r") as f:
         y_score = []
         for line in f:
