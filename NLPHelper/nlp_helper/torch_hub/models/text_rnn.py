@@ -15,6 +15,6 @@ class TextRNN(nn.Module):
     def forward(self, x):
         # x, _ = x
         out = self.embedding(x)  # [batch_size, seq_len, embedding_dim]=[128, 32, 300]
-        out, _ = self.lstm(out)
-        out = self.fc(out[:, -1, :])  # 句子最后时刻的 hidden state
+        out, _ = self.lstm(out)  # output, (h_n, c_n)  output is [batch, seq, 2*hidden_size]
+        out = self.fc(out[:, -1, :])  # out[:, -1, :]为[batch, 2*hidden_size], 最终为[batch, num_classes]
         return out
