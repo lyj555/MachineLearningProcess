@@ -9,4 +9,12 @@ log.txt
 *.tar.gz
 *.zip
 *.ipynb_checkpoints
+NLPHelper/data
+ModelHelper/build/
+ModelHelper/dist/
+ModelHelper/model_helper.egg-info/
+ModelHelper/tttt.py
+*.csv
+*.bin
+interveiw_experience.md
 
