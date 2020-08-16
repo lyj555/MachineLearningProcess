@@ -26,10 +26,8 @@ class SelfModel:
         self.model.train()
         batch_data_x, batch_data_y = self.slice_batch_(batch)  # batch shape (x1, x2, ) y
         outputs = self.model(*[i.to(self.device_) for i in batch_data_x])  # position must match
-        loss = self.loss_(outputs, batch_data_y.to(self.device_))  # 计算loss
-
-        # self.model.zero_grad()  # 梯度归零
         self.optimizer_.zero_grad()
+        loss = self.loss_(outputs, batch_data_y.to(self.device_))  # 计算loss
         loss.backward()  # 梯度反向传播
         self.optimizer_.step()  # 参数更新
 
