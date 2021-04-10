@@ -325,7 +325,7 @@ print(f"best_param is {best_params}")
 
 - 机器学习
 
-      目前提供的解释的模型有XGBoost、LightGBM和RandomForest模型，均是基于`shap`包得到。
+  目前提供的解释的模型有XGBoost、LightGBM和RandomForest模型，均是基于`shap`包得到。
 
 - 深度学习
 
@@ -655,7 +655,7 @@ fig, ax = explain_image_plot(x_test[1:5], model, background)  # 对其中四个�
 
 output image：
 
-![](./pics/image_explain_plot.png)
+![](../../../pics/image_explain_plot.png)
 
 其中左侧是挑选四幅测试集图像，右侧是模型作出的预测，以及对应的解释（红色部分表示正向增益，蓝色表示反向增益）
 
