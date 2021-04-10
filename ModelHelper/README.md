@@ -65,18 +65,13 @@ The purpose of the project is to make modelers more efficient.
 
 - 本地安装
 
-    - `git clone http://igit.58corp.com/AIgroups/ModelHelper.git` 
-
     - `python setup.py install`
 
-- pip安装
-
-    `pip install git+http://igit.58corp.com/AIgroups/ModelHelper.git`
 
 
 ## 2. 特征选择
 
-目前特征选择部分实现了四种算法，分别为**随机搜索**、**lvw**、**random search by feature importance**和**top feature importance**，这几种算法本质区别主要是每次特征子集的选取不同，下面列举每一种算法的原理以及code示例，详细的使用方法参考如下[链接](http://igit.58corp.com/AIgroups/ModelHelper/blob/master/tutorials/feature%20select/feature_select.ipynb)。
+目前特征选择部分实现了四种算法，分别为**随机搜索**、**lvw**、**random search by feature importance**和**top feature importance**，这几种算法本质区别主要是每次特征子集的选取不同，下面列举每一种算法的原理以及code示例，详细的使用方法参考`./tutorials/feature_select`。
 
 创建虚拟数据
 
@@ -203,7 +198,7 @@ print(effect, subset)
 
 ## 3. 超参数搜索
 
-目前实现了四种方式，分别为随机搜索，网格搜索，bayes_opt和hyper_opt，详细的使用方法参考如下[链接](http://igit.58corp.com/AIgroups/ModelHelper/blob/master/tutorials/param%20search/param_serach.ipynb)。
+目前实现了四种方式，分别为随机搜索，网格搜索，bayes_opt和hyper_opt，详细的使用方法参考`./tutorials/param_search`。
 
 ### 3.1 随机搜索
 
@@ -326,7 +321,7 @@ print(f"best_param is {best_params}")
 
 ## 4. 模型解释
 
-本部分为模型解释部分，主要分为两块，机器学习和深度学习部分。下面介绍大致原理和部分示例代码，详细的使用方式，参考[链接](http://igit.58corp.com/AIgroups/ModelHelper/blob/master/tutorials/model%20explain/model_explain.ipynb)。
+本部分为模型解释部分，主要分为两块，机器学习和深度学习部分。下面介绍大致原理和部分示例代码，详细的使用方式，参考`./tutorials/model_explain`。
 
 - 机器学习
 
@@ -770,7 +765,7 @@ output:
 
 ## 5. 模型融合
 
-本部分主要分为三块，分别是Stacking，Blending和Bagging。这几部分所有实现均包含了单机版本和分布式版本，下面的介绍中主要从这两方面介绍，详细的使用方式，参考[链接](http://igit.58corp.com/AIgroups/ModelHelper/blob/master/tutorials/model%20ensemble/model_ensemble.ipynb)。
+本部分主要分为三块，分别是Stacking，Blending和Bagging。这几部分所有实现均包含了单机版本和分布式版本，下面的介绍中主要从这两方面介绍，详细的使用方式，参考`./tutorials/model_ensemble/model_ensemble.ipynb`。
 
 ### 5.1 Stacking
 
